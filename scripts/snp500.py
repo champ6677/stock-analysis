@@ -1,5 +1,5 @@
 import pandas as pd
-import snowflake.connector
+from scripts.snowflake import get_snowflake_conn
 
 # **Step 1: Fetch S&P 500 Stock List from Wikipedia**
 def get_sp500_stocks():
@@ -14,14 +14,7 @@ def get_sp500_stocks():
 
 def insert_into_snowflake(df):
     # Snowflake connection details
-    conn = snowflake.connector.connect(
-        user="champ6677",
-        password="",
-        account="",
-        warehouse="",
-        database="STOCKS",
-        schema="DEV"
-    )
+    conn = get_snowflake_conn()
     cursor = conn.cursor()
 
     # **Create a temporary table to load data**

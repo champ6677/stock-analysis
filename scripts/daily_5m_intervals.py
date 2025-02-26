@@ -1,20 +1,11 @@
-import pandas as pd
-import snowflake.connector
+from scripts.snowflake import get_snowflake_conn
 import yfinance as yf
-import re;
 from datetime import datetime, timedelta
 
 
 def fetch_tickers():
     # Snowflake connection details
-    conn = snowflake.connector.connect(
-        user="champ6677",
-        password="",
-        account="",
-        warehouse="",
-        database="STOCKS",
-        schema="DEV"
-    )
+    conn = get_snowflake_conn()
     cursor = conn.cursor()
     # **Fetch tickers from snowflake table**
     cursor.execute("SELECT DISTINCT TICKER FROM STOCKS");
@@ -26,23 +17,12 @@ def fetch_tickers():
     return formatted_rows
 
 def insert_5m_interval(tickers, interval='5m'):
-    conn = snowflake.connector.connect(
-        user="champ6677",
-        password="",
-        account="",
-        warehouse="",
-        database="STOCKS",
-        schema="DEV"
-    )
-        
+    conn = get_snowflake_conn()
     cursor = conn.cursor()
-
     # **Step 3: Fetch Data & Store in a Batch List**
     batch_data = []
-    start_date = datetime.now() - timedelta(days=4)
-    end_date = datetime.now() - timedelta(days=3)
-
-
+    start_date = datetime.now() - timedelta(days=1)
+    end_date = datetime.now()
     try:
         data = yf.download(tickers, start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'), interval=interval, prepost=False)
         for ticker in tickers:
